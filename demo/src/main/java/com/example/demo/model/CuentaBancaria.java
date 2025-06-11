@@ -1,9 +1,7 @@
 package com.example.demo.model;
+import com.example.demo.model.CuentaBancaria;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class CuentaBancaria {
@@ -13,6 +11,8 @@ public class CuentaBancaria {
     private Long id;
 
     private String titular;
+    private String cedula;
+    private String pin; // PIN de 4 dígitos
     private Double saldo;
 
     // Getters y Setters
@@ -30,6 +30,22 @@ public class CuentaBancaria {
 
     public void setTitular(String titular) {
         this.titular = titular;
+    }
+
+    public String getCedula() {
+        return cedula;
+    }
+
+    public void setCedula(String cedula) {
+        this.cedula = cedula;
+    }
+
+    public String getPin() {
+        return pin;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
     }
 
     public Double getSaldo() {

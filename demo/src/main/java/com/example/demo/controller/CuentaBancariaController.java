@@ -17,24 +17,14 @@ public class CuentaBancariaController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity<CuentaBancaria> crearCuenta(@RequestBody CuentaBancaria cuenta) {
-        return ResponseEntity.ok(service.crearCuenta(cuenta));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<CuentaBancaria> consultarSaldo(@PathVariable Long id) {
-        Optional<CuentaBancaria> cuenta = service.consultarSaldo(id);
+        Optional<CuentaBancaria> cuenta = service.consultarSaldo(id); // Cambiar lógica según el servicio
         return cuenta.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/{id}/depositar")
-    public ResponseEntity<CuentaBancaria> depositar(@PathVariable Long id, @RequestParam Double monto) {
-        return ResponseEntity.ok(service.depositar(id, monto));
-    }
-
-    @PostMapping("/{id}/retirar")
-    public ResponseEntity<CuentaBancaria> retirar(@PathVariable Long id, @RequestParam Double monto) {
-        return ResponseEntity.ok(service.retirar(id, monto));
+    @PostMapping
+    public ResponseEntity<CuentaBancaria> crearCuenta(@RequestBody CuentaBancaria cuenta) {
+        return ResponseEntity.ok(service.crearCuenta(cuenta));
     }
 }

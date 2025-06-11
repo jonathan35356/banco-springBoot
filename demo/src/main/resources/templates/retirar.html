@@ -9,6 +9,9 @@
 <body class="bg-light">
     <div class="container mt-5">
         <h1 class="text-center mb-4">Retirar Dinero</h1>
+        <div class="alert alert-danger" th:if="${error != null}">
+            [[${error}]]
+        </div>
         <form action="/cuentas/retirar" method="post" class="card p-4 shadow-sm">
             <div class="mb-3">
                 <label for="id" class="form-label">ID de la Cuenta</label>

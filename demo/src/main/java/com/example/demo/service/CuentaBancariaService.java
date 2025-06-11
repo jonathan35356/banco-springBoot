@@ -7,6 +7,7 @@ import com.example.demo.repository.TransaccionRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,9 +50,11 @@ public class CuentaBancariaService {
     public CuentaBancaria retirar(Long id, Double monto) {
         CuentaBancaria cuenta = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+
         if (cuenta.getSaldo() < monto) {
-            throw new RuntimeException("Saldo insuficiente");
+            throw new RuntimeException("Saldo insuficiente para realizar el retiro");
         }
+
         cuenta.setSaldo(cuenta.getSaldo() - monto);
         repository.save(cuenta);
 
@@ -64,5 +67,41 @@ public class CuentaBancariaService {
         transaccionRepository.save(transaccion);
 
         return cuenta;
+    }
+
+    public void transferir(Long origenId, Long destinoId, Double monto) {
+        CuentaBancaria origen = repository.findById(origenId)
+                .orElseThrow(() -> new RuntimeException("Cuenta de origen no encontrada"));
+        CuentaBancaria destino = repository.findById(destinoId)
+                .orElseThrow(() -> new RuntimeException("Cuenta de destino no encontrada"));
+
+        if (origen.getSaldo() < monto) {
+            throw new RuntimeException("Saldo insuficiente en la cuenta de origen");
+        }
+
+        origen.setSaldo(origen.getSaldo() - monto);
+        destino.setSaldo(destino.getSaldo() + monto);
+
+        repository.save(origen);
+        repository.save(destino);
+
+        // Registrar transacciones
+        Transaccion transaccionOrigen = new Transaccion();
+        transaccionOrigen.setCuenta(origen);
+        transaccionOrigen.setTipo("TRANSFERENCIA SALIENTE");
+        transaccionOrigen.setMonto(monto);
+        transaccionOrigen.setFecha(LocalDateTime.now());
+        transaccionRepository.save(transaccionOrigen);
+
+        Transaccion transaccionDestino = new Transaccion();
+        transaccionDestino.setCuenta(destino);
+        transaccionDestino.setTipo("TRANSFERENCIA ENTRANTE");
+        transaccionDestino.setMonto(monto);
+        transaccionDestino.setFecha(LocalDateTime.now());
+        transaccionRepository.save(transaccionDestino);
+    }
+
+    public List<CuentaBancaria> obtenerTodasLasCuentas() {
+        return repository.findAll();
     }
 }

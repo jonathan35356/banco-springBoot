@@ -15,7 +15,7 @@ public class Transaccion {
 
     private String tipo; // "DEPOSITO" o "RETIRO"
     private Double monto;
-    private LocalDateTime fecha;
+    private LocalDateTime fecha; // Asegúrate de que sea LocalDateTime
 
     // Getters y Setters
     public Long getId() {

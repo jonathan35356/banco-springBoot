@@ -7,6 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Optional;
+
 @Controller
 public class CuentaController {
 
@@ -17,9 +19,19 @@ public class CuentaController {
     }
 
     @PostMapping("/cuentas/crear")
-    public String crearCuenta(@RequestParam("titular") String titular, Model model) {
+    public String crearCuenta(@RequestParam("titular") String titular,
+                              @RequestParam("cedula") String cedula,
+                              @RequestParam("pin") String pin,
+                              Model model) {
+        if (pin.length() != 4) {
+            model.addAttribute("error", "El PIN debe tener exactamente 4 dígitos.");
+            return "crear-cuenta";
+        }
+
         CuentaBancaria nuevaCuenta = new CuentaBancaria();
         nuevaCuenta.setTitular(titular);
+        nuevaCuenta.setCedula(cedula);
+        nuevaCuenta.setPin(pin);
         nuevaCuenta.setSaldo(0.0);
         cuentaBancariaService.crearCuenta(nuevaCuenta);
 
@@ -29,39 +41,14 @@ public class CuentaController {
 
     @PostMapping("/cuentas/consultar")
     public String consultarSaldo(@RequestParam("id") Long id, Model model) {
-        CuentaBancaria cuenta = cuentaBancariaService.consultarSaldo(id)
-                .orElse(null);
+        Optional<CuentaBancaria> cuenta = cuentaBancariaService.consultarSaldo(id);
 
-        if (cuenta == null) {
+        if (cuenta.isEmpty()) {
             model.addAttribute("error", "Cuenta no encontrada con ID: " + id);
         } else {
-            model.addAttribute("cuenta", cuenta);
+            model.addAttribute("cuenta", cuenta.get());
         }
 
         return "consultar-saldo";
-    }
-
-    @PostMapping("/cuentas/depositar")
-    public String depositar(@RequestParam("id") Long id, @RequestParam("monto") Double monto, Model model) {
-        try {
-            CuentaBancaria cuenta = cuentaBancariaService.depositar(id, monto);
-            model.addAttribute("mensaje", "Depósito exitoso. Nuevo saldo: " + cuenta.getSaldo());
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-        }
-
-        return "depositar";
-    }
-
-    @PostMapping("/cuentas/retirar")
-    public String retirar(@RequestParam("id") Long id, @RequestParam("monto") Double monto, Model model) {
-        try {
-            CuentaBancaria cuenta = cuentaBancariaService.retirar(id, monto);
-            model.addAttribute("mensaje", "Retiro exitoso. Nuevo saldo: " + cuenta.getSaldo());
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-        }
-
-        return "retirar";
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -40,15 +41,28 @@ public class CuentaController {
     }
 
     @PostMapping("/cuentas/consultar")
-    public String consultarSaldo(@RequestParam("id") Long id, Model model) {
-        Optional<CuentaBancaria> cuenta = cuentaBancariaService.consultarSaldo(id);
+    public String consultarSaldo(@RequestParam("cedula") String cedula, Model model) {
+        List<CuentaBancaria> cuentas = cuentaBancariaService.consultarSaldoPorCedula(cedula);
 
-        if (cuenta.isEmpty()) {
-            model.addAttribute("error", "Cuenta no encontrada con ID: " + id);
+        if (cuentas.isEmpty()) {
+            model.addAttribute("error", "No se encontraron cuentas con la cédula: " + cedula);
         } else {
-            model.addAttribute("cuenta", cuenta.get());
+            model.addAttribute("cuentas", cuentas);
         }
 
         return "consultar-saldo";
+    }
+
+    @PostMapping("/cuentas/depositar")
+    public String depositar(@RequestParam("cedula") String cedula,
+                            @RequestParam("monto") Double monto,
+                            Model model) {
+        try {
+            CuentaBancaria cuenta = cuentaBancariaService.depositarPorCedula(cedula, monto);
+            model.addAttribute("mensaje", "Depósito realizado con éxito. Nuevo saldo: $" + cuenta.getSaldo());
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "depositar";
     }
 }

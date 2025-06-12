@@ -104,4 +104,27 @@ public class CuentaBancariaService {
     public List<CuentaBancaria> obtenerTodasLasCuentas() {
         return repository.findAll();
     }
+
+    public CuentaBancaria depositarPorCedula(String cedula, Double monto) {
+        CuentaBancaria cuenta = repository.findByCedula(cedula)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con la cédula: " + cedula));
+        cuenta.setSaldo(cuenta.getSaldo() + monto);
+        repository.save(cuenta);
+
+        // Registrar la transacción
+        Transaccion transaccion = new Transaccion();
+        transaccion.setCuenta(cuenta);
+        transaccion.setTipo("DEPOSITO");
+        transaccion.setMonto(monto);
+        transaccion.setFecha(LocalDateTime.now());
+        transaccionRepository.save(transaccion);
+
+        return cuenta;
+    }
+
+    public List<CuentaBancaria> consultarSaldoPorCedula(String cedula) {
+        return repository.findByCedula(cedula)
+                .map(List::of)
+                .orElseThrow(() -> new RuntimeException("No se encontraron cuentas con la cédula: " + cedula));
+    }
 }

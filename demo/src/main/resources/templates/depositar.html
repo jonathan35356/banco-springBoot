@@ -20,6 +20,18 @@
             </div>
             <button type="submit" class="btn btn-success w-100">Depositar</button>
         </form>
+
+        <!-- Mensaje de confirmación -->
+        <div class="mt-4">
+            <div class="alert alert-success" role="alert" th:if="${mensaje}">
+                <p th:text="${mensaje}"></p>
+                <p th:if="${titular}" th:text="'Titular: ' + ${titular}"></p>
+            </div>
+            <div class="alert alert-danger" role="alert" th:if="${error}">
+                <p th:text="${error}"></p>
+            </div>
+        </div>
+
         <div class="text-center mt-3">
             <a href="/" class="btn btn-link">Volver al Inicio</a>
         </div>

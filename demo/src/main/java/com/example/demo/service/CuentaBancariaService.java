@@ -127,4 +127,26 @@ public class CuentaBancariaService {
                 .map(List::of)
                 .orElseThrow(() -> new RuntimeException("No se encontraron cuentas con la cédula: " + cedula));
     }
+
+    public CuentaBancaria retirarPorCedula(String cedula, Double monto) {
+        CuentaBancaria cuenta = repository.findByCedula(cedula)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con la cédula: " + cedula));
+
+        if (cuenta.getSaldo() < monto) {
+            throw new RuntimeException("Saldo insuficiente para realizar el retiro");
+        }
+
+        cuenta.setSaldo(cuenta.getSaldo() - monto);
+        repository.save(cuenta);
+
+        // Registrar la transacción
+        Transaccion transaccion = new Transaccion();
+        transaccion.setCuenta(cuenta);
+        transaccion.setTipo("RETIRO");
+        transaccion.setMonto(monto);
+        transaccion.setFecha(LocalDateTime.now());
+        transaccionRepository.save(transaccion);
+
+        return cuenta;
+    }
 }

@@ -65,4 +65,18 @@ public class CuentaController {
         }
         return "depositar";
     }
+
+    @PostMapping("/cuentas/retirar")
+    public String retirar(@RequestParam("cedula") String cedula,
+                          @RequestParam("monto") Double monto,
+                          Model model) {
+        try {
+            CuentaBancaria cuenta = cuentaBancariaService.retirarPorCedula(cedula, monto);
+            model.addAttribute("mensaje", "Retiro realizado con éxito. Nuevo saldo: $" + cuenta.getSaldo());
+            model.addAttribute("titular", cuenta.getTitular());
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "retirar";
+    }
 }

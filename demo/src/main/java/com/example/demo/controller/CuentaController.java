@@ -79,4 +79,18 @@ public class CuentaController {
         }
         return "retirar";
     }
+
+    @PostMapping("/cuentas/transferirPorCedula")
+    public String transferirPorCedula(@RequestParam("cedulaOrigen") String cedulaOrigen,
+                                      @RequestParam("cedulaDestino") String cedulaDestino,
+                                      @RequestParam("monto") Double monto,
+                                      Model model) {
+        try {
+            cuentaBancariaService.transferirPorCedula(cedulaOrigen, cedulaDestino, monto);
+            model.addAttribute("mensaje", "Transferencia realizada con éxito de " + cedulaOrigen + " a " + cedulaDestino);
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "transferir";
+    }
 }

@@ -149,4 +149,39 @@ public class CuentaBancariaService {
 
         return cuenta;
     }
+
+    public void transferirPorCedula(String cedulaOrigen, String cedulaDestino, Double monto) {
+        CuentaBancaria cuentaOrigen = repository.findByCedula(cedulaOrigen)
+                .orElseThrow(() -> new RuntimeException("Cuenta origen no encontrada con la cédula: " + cedulaOrigen));
+
+        CuentaBancaria cuentaDestino = repository.findByCedula(cedulaDestino)
+                .orElseThrow(() -> new RuntimeException("Cuenta destino no encontrada con la cédula: " + cedulaDestino));
+
+        if (cuentaOrigen.getSaldo() < monto) {
+            throw new RuntimeException("Saldo insuficiente en la cuenta origen para realizar la transferencia");
+        }
+
+        // Actualizar saldos
+        cuentaOrigen.setSaldo(cuentaOrigen.getSaldo() - monto);
+        cuentaDestino.setSaldo(cuentaDestino.getSaldo() + monto);
+
+        // Guardar cambios en la base de datos
+        repository.save(cuentaOrigen);
+        repository.save(cuentaDestino);
+
+        // Registrar la transacción
+        Transaccion transaccionOrigen = new Transaccion();
+        transaccionOrigen.setCuenta(cuentaOrigen);
+        transaccionOrigen.setTipo("TRANSFERENCIA SALIDA");
+        transaccionOrigen.setMonto(monto);
+        transaccionOrigen.setFecha(LocalDateTime.now());
+        transaccionRepository.save(transaccionOrigen);
+
+        Transaccion transaccionDestino = new Transaccion();
+        transaccionDestino.setCuenta(cuentaDestino);
+        transaccionDestino.setTipo("TRANSFERENCIA ENTRADA");
+        transaccionDestino.setMonto(monto);
+        transaccionDestino.setFecha(LocalDateTime.now());
+        transaccionRepository.save(transaccionDestino);
+    }
 }

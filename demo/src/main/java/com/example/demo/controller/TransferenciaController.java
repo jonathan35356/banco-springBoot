@@ -24,16 +24,21 @@ public class TransferenciaController {
 
     // Maneja solicitudes POST para realizar la transferencia
     @PostMapping("/cuentas/transferir")
-    public String transferir(@RequestParam("origenId") Long origenId,
-                             @RequestParam("destinoId") Long destinoId,
+    public String transferir(@RequestParam("idOrigen") Long idOrigen,
+                             @RequestParam("idDestino") Long idDestino,
                              @RequestParam("monto") Double monto,
                              Model model) {
-        try {
-            cuentaBancariaService.transferir(origenId, destinoId, monto);
-            model.addAttribute("mensaje", "Transferencia realizada con éxito");
-        } catch (RuntimeException e) {
-            model.addAttribute("error", e.getMessage());
-        }
+        // Lógica de transferencia
+        return "transferir";
+    }
+
+    // Maneja solicitudes POST para realizar la transferencia por ID
+    @PostMapping("/cuentas/transferirPorId")
+    public String transferirPorId(@RequestParam("idOrigen") Long idOrigen,
+                                  @RequestParam("idDestino") Long idDestino,
+                                  @RequestParam("monto") Double monto,
+                                  Model model) {
+        // Lógica de transferencia por ID
         return "transferir";
     }
 }

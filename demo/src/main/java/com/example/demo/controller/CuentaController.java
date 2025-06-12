@@ -1,9 +1,11 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.CuentaBancaria;
+import com.example.demo.model.Transaccion;
 import com.example.demo.service.CuentaBancariaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -12,7 +14,6 @@ import java.util.Optional;
 
 @Controller
 public class CuentaController {
-
     private final CuentaBancariaService cuentaBancariaService;
 
     public CuentaController(CuentaBancariaService cuentaBancariaService) {
@@ -92,5 +93,16 @@ public class CuentaController {
             model.addAttribute("error", e.getMessage());
         }
         return "transferir";
+    }
+
+    @GetMapping("/cuentas/historialPorCedula")
+    public String historialPorCedula(@RequestParam("cedula") String cedula, Model model) {
+        try {
+            List<Transaccion> transacciones = cuentaBancariaService.obtenerHistorialPorCedula(cedula);
+            model.addAttribute("transacciones", transacciones);
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+        }
+        return "historial";
     }
 }

@@ -184,4 +184,10 @@ public class CuentaBancariaService {
         transaccionDestino.setFecha(LocalDateTime.now());
         transaccionRepository.save(transaccionDestino);
     }
+
+    public List<Transaccion> obtenerHistorialPorCedula(String cedula) {
+        CuentaBancaria cuenta = repository.findByCedula(cedula)
+                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada con la cédula: " + cedula));
+        return transaccionRepository.findByCuenta(cuenta);
+    }
 }

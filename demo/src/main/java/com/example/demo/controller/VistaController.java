@@ -56,4 +56,19 @@ public class VistaController {
     public String retirar() {
         return "retirar";
     }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login"; // Redirige a la vista login.html
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
+
+    @GetMapping("/index")
+    public String index() {
+        return "index"; // Redirige a la vista index.html
+    }
 }

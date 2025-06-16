@@ -34,4 +34,14 @@ public class UsuarioService {
         usuarioRepository.save(nuevoUsuario);
         return true;
     }
+
+    public Usuario depositar(String cedula, Double monto) {
+        Usuario usuario = usuarioRepository.findByCedula(cedula)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con la cédula: " + cedula));
+
+        usuario.setSaldo(usuario.getSaldo() + monto);
+        usuarioRepository.save(usuario);
+
+        return usuario;
+    }
 }

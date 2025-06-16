@@ -9,16 +9,15 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false, unique = true)
     private String cedula;
 
-    @Column(nullable = false, length = 4)
     private String pin;
 
-    // Getters y Setters
+    private Double saldo = 0.0; // Inicializa el saldo en 0
+
+    // Getters y setters
     public Long getId() {
         return id;
     }
@@ -49,5 +48,13 @@ public class Usuario {
 
     public void setPin(String pin) {
         this.pin = pin;
+    }
+
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
     }
 }
